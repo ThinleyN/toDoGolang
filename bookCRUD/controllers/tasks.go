@@ -6,6 +6,7 @@ import (
 	// "bookc/models"
 	"bookCRUD/models"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -14,6 +15,7 @@ import (
 type CreateTaskInput struct {
 	AssingedTo string `json:"assignedTo"`
 	Task       string `json:"task"`
+	Deadline   string `json:"deadline`
 }
 
 type UpdateTaskInput struct {
@@ -40,8 +42,11 @@ func CreateTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	date := "2006-01-02"
+	deadline, _ := time.Parse(date, input.Deadline)
+
 	// Create task
-	task := models.Task{AssingedTo: input.AssingedTo, Task: input.Task}
+	task := models.Task{AssingedTo: input.AssingedTo, Task: input.Task, Deadline: deadline}
 
 	db := c.MustGet("db").(*gorm.DB)
 	db.Create(&task)
