@@ -21,6 +21,7 @@ type CreateTaskInput struct {
 type UpdateTaskInput struct {
 	AssingedTo string `json:"assignedTo"`
 	Task       string `json:"task"`
+	Deadline   string `json:"deadline`
 }
 
 // GET /tasks
@@ -87,7 +88,15 @@ func UpdateTask(c *gin.Context) {
 		return
 	}
 
-	db.Model(&task).Updates(input)
+	date := "2006-01-02"
+	deadline, _ := time.Parse(date, input.Deadline)
+
+	var updatedInput models.Task
+	updatedInput.Deadline = deadline
+	updatedInput.AssingedTo = input.AssingedTo
+	updatedInput.Task = input.Task
+
+	db.Model(&task).Updates(updatedInput)
 
 	c.JSON(http.StatusOK, gin.H{"data": task})
 }
